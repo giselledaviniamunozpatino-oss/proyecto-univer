@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Intelligence | Dashboard Financiero Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade { animation: fadeIn 0.6s ease-out forwards; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
+
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <span class="bg-indigo-600 text-white text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider shadow-lg shadow-indigo-500/20">📊 BI System</span>
+                <h1 class="text-base font-semibold tracking-tight text-white">Analizador Financiero Multiuso</h1>
+            </div>
+            <div class="text-xs text-slate-400 font-medium">Estado: <span class="text-emerald-400 font-bold">● En Línea</span></div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-6 py-10 w-full flex-grow space-y-8 animate-fade">
+        
+        <!-- Hero Section -->
+        <div class="text-center mb-8 space-y-2">
+            <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
+                Panel de Control <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400">Corporativo</span>
+            </h2>
+            <p class="max-w-xl mx-auto text-slate-400 text-sm">
+                Control contable, semáforo financiero, comparador mensual y generación de informes ejecutivos con historial completo.
+            </p>
+        </div>
+
+        <!-- 1. SEMÁFORO FINANCIERO -->
+        <div class="bg-gradient-to-br from-slate-900 to-slate-900/80 border border-slate-800 p-6 sm:p-8 rounded-3xl shadow-2xl space-y-4">
+            <div class="flex justify-between items-center flex-wrap gap-3">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">🚦 Semáforo Financiero Automático</h3>
+                <span id="badge-estado" class="px-4 py-1.5 rounded-full text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700">Sin Datos Registrados</span>
+            </div>
+            <div class="w-full bg-slate-950 rounded-full h-4 p-0.5 border border-slate-800 overflow-hidden shadow-inner">
+                <div id="barra-escala" class="bg-gradient-to-r from-rose-500 via-amber-400 to-emerald-500 h-full rounded-full transition-all duration-700 ease-out shadow-lg" style="width: 0%;"></div>
+            </div>
+            <p id="texto-diagnostico" class="text-sm text-slate-400 italic">Registra tus movimientos en la parte inferior para activar el diagnóstico de salud empresarial.</p>
+        </div>
+
+        <!-- Formulario de Registro Estilizado -->
+        <div class="bg-slate-900/90 border border-slate-800 p-6 sm:p-8 rounded-3xl shadow-2xl space-y-4">
+            <h3 class="text-lg font-bold text-white">➕ Registrar Nuevo Movimiento Contable</h3>
+            <form id="form-transaccion" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                <input type="date" id="input-fecha" required class="bg-slate-950 border border-slate-800 rounded-2xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition-all">
+                <select id="input-tipo" class="bg-slate-950 border border-slate-800 rounded-2xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition-all">
+                    <option value="Ingreso">Ingreso</option>
+                    <option value="Egreso">Egreso</option>
+                </select>
+                <select id="input-cat" class="bg-slate-950 border border-slate-800 rounded-2xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition-all">
+                    <option value="Ventas / Servicios">Ventas / Servicios</option>
+                    <option value="Honorarios">Honorarios Profesionales</option>
+                    <option value="Alquileres">Alquileres / Oficinas</option>
+                    <option value="Publicidad">Publicidad y Marketing</option>
+                    <option value="Proveedores">Proveedores / Insumos</option>
+                    <option value="Software / Herramientas">Software / Herramientas</option>
+                    <option value="Otros Gastos">Otros Gastos</option>
+                </select>
+                <input type="number" id="input-monto" placeholder="Monto en Bs." step="0.01" required class="bg-slate-950 border border-slate-800 rounded-2xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition-all">
+                <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm rounded-2xl py-3 px-6 transition-all shadow-lg shadow-indigo-600/30 active:scale-95">Guardar Dato</button>
+            </form>
+        </div>
+
+        <!-- Tarjetas de Métricas con Colores Diferentes -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Ingresos (Tono Esmeralda) -->
+            <div class="bg-gradient-to-br from-emerald-950/40 to-slate-900 border border-emerald-500/20 p-6 rounded-3xl shadow-xl transition-transform duration-300 hover:-translate-y-1">
+                <h4 class="text-xs font-semibold text-emerald-400 uppercase tracking-wider">Ingresos Totales</h4>
+                <p id="txt-ingresos" class="text-2xl font-extrabold text-emerald-300 mt-2">Bs. 0.00</p>
+            </div>
+            <!-- Egresos (Tono Rosa / Rojo) -->
+            <div class="bg-gradient-to-br from-rose-950/40 to-slate-900 border border-rose-500/20 p-6 rounded-3xl shadow-xl transition-transform duration-300 hover:-translate-y-1">
+                <h4 class="text-xs font-semibold text-rose-400 uppercase tracking-wider">Egresos Totales</h4>
+                <p id="txt-egresos" class="text-2xl font-extrabold text-rose-300 mt-2">Bs. 0.00</p>
+            </div>
+            <!-- Utilidad Neta (Tono Índigo / Azul) -->
+            <div class="bg-gradient-to-br from-indigo-950/40 to-slate-900 border border-indigo-500/20 p-6 rounded-3xl shadow-xl transition-transform duration-300 hover:-translate-y-1">
+                <h4 class="text-xs font-semibold text-indigo-400 uppercase tracking-wider">Utilidad Neta</h4>
+                <p id="txt-utilidad" class="text-2xl font-extrabold text-indigo-300 mt-2">Bs. 0.00</p>
+            </div>
+            <!-- Margen de Utilidad (Tono Ámbar / Dorado) -->
+            <div class="bg-gradient-to-br from-amber-950/40 to-slate-900 border border-amber-500/20 p-6 rounded-3xl shadow-xl transition-transform duration-300 hover:-translate-y-1">
+                <h4 class="text-xs font-semibold text-amber-400 uppercase tracking-wider">Margen de Utilidad</h4>
+                <p id="txt-margen" class="text-2xl font-extrabold text-amber-300 mt-2">0.0%</p>
+            </div>
+        </div>
+
+        <!-- Comparador Mensual y Asistente Inteligente -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-slate-900 border border-slate-800 p-6 sm:p-8 rounded-3xl shadow-xl space-y-4">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">📈 Comparador Mensual</h3>
+                <p class="text-xs text-slate-400">Rendimiento actual comparado con el promedio histórico mensual:</p>
+                <div class="space-y-3 bg-slate-950 p-4 rounded-2xl border border-slate-800">
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-slate-400">Mes Anterior (Base):</span>
+                        <span class="font-semibold text-slate-200">Bs. 5,000.00</span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-slate-400">Mes Actual (Registros):</span>
+                        <span id="txt-mes-actual" class="font-bold text-emerald-400">Bs. 0.00</span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm border-t border-slate-800 pt-2">
+                        <span class="text-slate-400">Variación Real:</span>
+                        <span id="txt-crecimiento" class="font-bold text-indigo-400">0.0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 border border-slate-800 p-6 sm:p-8 rounded-3xl shadow-xl space-y-4">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">🤖 Asistente Inteligente</h3>
+                <div id="caja-recomendaciones" class="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-xs text-slate-300 space-y-2 min-h-[120px] flex flex-col justify-center">
+                    <p class="italic text-slate-500">Esperando datos contables para emitir directrices estratégicas...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráficos Estadísticos -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-slate-900 border border-slate-800 p-6 sm:p-8 rounded-3xl shadow-xl flex flex-col items-center justify-center">
+                <h3 class="text-lg font-bold text-white mb-4 w-full text-left">Comparativa: Ingresos vs Egresos</h3>
+                <div class="w-full h-64 relative">
+                    <canvas id="chartBarras"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 border border-slate-800 p-6 sm:p-8 rounded-3xl shadow-xl flex flex-col items-center justify-center">
+                <h3 class="text-lg font-bold text-white mb-4 w-full text-left">Distribución Global de Egresos (%)</h3>
+                <div class="w-full max-w-xs h-64 relative flex items-center justify-center">
+                    <canvas id="chartTorta"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Historial y 4. INFORME AUTOMÁTICO COMPLETO -->
+        <div class="bg-slate-900 border border-slate-800 p-6 sm:p-8 rounded-3xl shadow-xl space-y-6">
+            <div class="flex justify-between items-center flex-wrap gap-4">
+                <h3 class="text-lg font-bold text-white">📜 Historial Completo y Reporte Ejecutivo</h3>
+                <button onclick="generarInforme()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-5 py-3 rounded-2xl transition-all shadow-lg shadow-indigo-600/30">📑 Generar Informe Automático Completo</button>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-slate-300">
+                    <thead class="bg-slate-950 text-xs uppercase text-slate-400 border-b border-slate-800">
+                        <tr>
+                            <th class="px-4 py-3">Fecha</th>
+                            <th class="px-4 py-3">Tipo</th>
+                            <th class="px-4 py-3">Categoría</th>
+                            <th class="px-4 py-3 text-right">Monto (Bs.)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-historial">
+                        <tr class="border-b border-slate-800/50">
+                            <td colspan="4" class="px-4 py-4 text-center text-slate-500">No hay transacciones registradas todavía.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Contenedor del Informe Automático -->
+            <div id="seccion-informe" class="hidden bg-slate-950 border border-indigo-500/30 p-6 rounded-2xl space-y-4 animate-fade">
+                <h4 class="text-base font-bold text-indigo-400 border-b border-slate-800 pb-2">📋 INFORME EJECUTIVO Y ESTADÍSTICO</h4>
+                <div id="contenido-informe" class="text-xs text-slate-300 space-y-3 leading-relaxed"></div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 bg-slate-900 py-6 mt-12 text-center text-xs text-slate-500">
+        Dashboard Financiero Corporativo — Sistema Automatizado de Business Intelligence.
+    </footer>
+
+    <!-- Script de Lógica, Estadísticas e Informe con Historial -->
+    <script>
+        let transacciones = [];
+
+        const ctxBarras = document.getElementById('chartBarras').getContext('2d');
+        let chartBarras = new Chart(ctxBarras, {
+            type: 'bar',
+            data: {
+                labels: ['Ingresos', 'Egresos'],
+                datasets: [{
+                    label: 'Monto en Bs.',
+                    data: [0, 0],
+                    backgroundColor: ['#10b981', '#f43f5e'],
+                    borderRadius: 12
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { ticks: { color: '#94a3b8' }, grid: { display: false } },
+                    y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } }
+                }
+            }
+        });
+
+        const ctxTorta = document.getElementById('chartTorta').getContext('2d');
+        let chartTorta = new Chart(ctxTorta, {
+            type: 'doughnut',
+            data: {
+                labels: ['Honorarios', 'Alquileres', 'Publicidad', 'Proveedores', 'Software', 'Otros'],
+                datasets: [{
+                    data: [1, 1, 1, 1, 1, 1],
+                    backgroundColor: ['#334155', '#334155', '#334155', '#334155', '#334155', '#334155'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: '#94a3b8', font: { family: 'Outfit', size: 10 } }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let sum = context.dataset.data.reduce((a, b) => a + b, 0);
+                                if (sum === 6 && context.dataset.backgroundColor[0] === '#334155') {
+                                    return ' Sin egresos registrados';
+                                }
+                                let currentValue = context.raw;
+                                let percentage = sum > 0 ? ((currentValue * 100) / sum).toFixed(1) : 0;
+                                return ` Bs. ${currentValue.toFixed(2)} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        function actualizarDashboard() {
+            let totalIngresos = 0;
+            let totalEgresos = 0;
+            let egresosCat = { 
+                'Honorarios': 0, 
+                'Alquileres': 0, 
+                'Publicidad': 0, 
+                'Proveedores': 0, 
+                'Software / Herramientas': 0, 
+                'Otros Gastos': 0 
+            };
+
+            let tbody = document.getElementById('tabla-historial');
+            tbody.innerHTML = '';
+
+            if (transacciones.length === 0) {
+                tbody.innerHTML = `<tr class="border-b border-slate-800/50"><td colspan="4" class="px-4 py-4 text-center text-slate-500">No hay transacciones registradas todavía.</td></tr>`;
+            } else {
+                transacciones.forEach(t => {
+                    if (t.tipo === 'Ingreso') {
+                        totalIngresos += t.monto;
+                    } else {
+                        totalEgresos += t.monto;
+                        if (egresosCat[t.categoria] !== undefined) {
+                            egresosCat[t.categoria] += t.monto;
+                        }
+                    }
+
+                    let tr = document.createElement('tr');
+                    tr.className = "border-b border-slate-800/50 hover:bg-slate-900/50 transition-colors";
+                    tr.innerHTML = `
+                        <td class="px-4 py-3 text-slate-400">${t.fecha}</td>
+                        <td class="px-4 py-3"><span class="px-2.5 py-1 rounded-full text-xs font-bold ${t.tipo === 'Ingreso' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}">${t.tipo}</span></td>
+                        <td class="px-4 py-3">${t.categoria}</td>
+                        <td class="px-4 py-3 text-right font-medium ${t.tipo === 'Ingreso' ? 'text-emerald-400' : 'text-rose-400'}">${t.tipo === 'Egreso' ? '-' : '+'} Bs. ${t.monto.toFixed(2)}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            let utilidad = totalIngresos - totalEgresos;
+            let margen = totalIngresos > 0 ? (utilidad / totalIngresos) * 100 : 0;
+
+            document.getElementById('txt-ingresos').innerText = `Bs. ${totalIngresos.toFixed(2)}`;
+            document.getElementById('txt-egresos').innerText = `Bs. ${totalEgresos.toFixed(2)}`;
+            document.getElementById('txt-utilidad').innerText = `Bs. ${utilidad.toFixed(2)}`;
+            document.getElementById('txt-margen').innerText = `${margen.toFixed(1)}%`;
+            document.getElementById('txt-mes-actual').innerText = `Bs. ${totalIngresos.toFixed(2)}`;
+
+            // Comparador Mensual (Base mes anterior = 5000)
+            let crecimiento = ((totalIngresos - 5000) / 5000) * 100;
+            let txtCrecimiento = document.getElementById('txt-crecimiento');
+            txtCrecimiento.innerText = `${crecimiento >= 0 ? '+' : ''}${crecimiento.toFixed(1)}%`;
+            txtCrecimiento.className = `font-bold ${crecimiento >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
+
+            // Semáforo Financiero
+            let barra = document.getElementById('barra-escala');
+            let badge = document.getElementById('badge-estado');
+            let txtDiag = document.getElementById('texto-diagnostico');
+            let porcentajeBarra = Math.min(Math.max(margen * 2.5, 0), 100);
+            barra.style.width = `${porcentajeBarra}%`;
+
+            if (totalIngresos === 0 && totalEgresos === 0) {
+                badge.className = "px-4 py-1.5 rounded-full text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700";
+                badge.innerText = "Sin Datos Registrados";
+                txtDiag.innerText = "Registra movimientos para activar el diagnóstico de salud empresarial.";
+            } else if (utilidad < 0) {
+                badge.className = "px-4 py-1.5 rounded-full text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40";
+                badge.innerText = "🔴 ROJO (Pérdidas Operativas)";
+                txtDiag.innerText = "Alerta crítica: Los egresos superan los ingresos. Es necesario recortar gastos fijos o incrementar la facturación.";
+            } else if (margen < 20) {
+                badge.className = "px-4 py-1.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40";
+                badge.innerText = "🟡 AMARILLO (Margen Ajustado)";
+                txtDiag.innerText = "Precaución: El negocio es autosustentable pero el margen de ganancia es bajo. Controla los costos operativos.";
+            } else {
+                badge.className = "px-4 py-1.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
+                badge.innerText = "🟢 VERDE (Salud Financiera Óptima)";
+                txtDiag.innerText = "Excelente: La organización opera con un margen de utilidad sumamente sólido y saludable.";
+            }
+
+            // Asistente Inteligente
+            let cajaRec = document.getElementById('caja-recomendaciones');
+            let htmlRec = "";
+            if (totalIngresos === 0) {
+                htmlRec = `<p class="italic text-slate-500">Esperando registros para evaluar el comportamiento financiero...</p>`;
+            } else {
+                if (egresosCat['Publicidad'] === 0 && totalIngresos > 0) {
+                    htmlRec += `<p>💡 <strong>Marketing:</strong> No se registran gastos en publicidad. Considera destinar un presupuesto para captar nuevos clientes.</p>`;
+                }
+                if (margen >= 20) {
+                    htmlRec += `<p>✨ <strong>Rentabilidad:</strong> El rendimiento neto es óptimo. Excelente momento para reinversión estratégica.</p>`;
+                }
+                if (htmlRec === "") {
+                    htmlRec = `<p>📈 Las operaciones financieras se mantienen estables dentro de los rangos previstos.</p>`;
+                }
+            }
+            cajaRec.innerHTML = htmlRec;
+
+            chartBarras.data.datasets[0].data = [totalIngresos, totalEgresos];
+            chartBarras.update();
+
+            if (totalEgresos === 0) {
+                chartTorta.data.datasets[0].data = [1, 1, 1, 1, 1, 1];
+                chartTorta.data.datasets[0].backgroundColor = ['#334155', '#334155', '#334155', '#334155', '#334155', '#334155'];
+            } else {
+                chartTorta.data.datasets[0].data = [
+                    egresosCat['Honorarios'],
+                    egresosCat['Alquileres'],
+                    egresosCat['Publicidad'],
+                    egresosCat['Proveedores'],
+                    egresosCat['Software / Herramientas'],
+                    egresosCat['Otros Gastos']
+                ];
+                chartTorta.data.datasets[0].backgroundColor = ['#6366f1', '#10b981', '#f59e0b', '#f43f5e', '#a855f7', '#06b6d4'];
+            }
+            chartTorta.update();
+        }
+
+        function generarInforme() {
+            let ingresos = document.getElementById('txt-ingresos').innerText;
+            let egresos = document.getElementById('txt-egresos').innerText;
+            let utilidad = document.getElementById('txt-utilidad').innerText;
+            let margen = document.getElementById('txt-margen').innerText;
+            let estado = document.getElementById('badge-estado').innerText;
+
+            let seccion = document.getElementById('seccion-informe');
+            let contenido = document.getElementById('contenido-informe');
+
+            // Construir lista del historial para el informe
+            let listaHistorialHTML = "";
+            if (transacciones.length === 0) {
+                listaHistorialHTML = "<li>No hay transacciones registradas.</li>";
+            } else {
+                transacciones.forEach(t => {
+                    listaHistorialHTML += `<li>• [${t.fecha}] <strong>${t.tipo}</strong> (${t.categoria}): ${t.tipo === 'Egreso' ? '-' : '+'} Bs. ${t.monto.toFixed(2)}</li>`;
+                });
+            }
+
+            seccion.classList.remove('hidden');
+            contenido.innerHTML = `
+                <p><strong>1. Diagnóstico General:</strong> El estado corporativo se califica como <strong>${estado}</strong>.</p>
+                <p><strong>2. Resumen Estadístico:</strong></p>
+                <ul class="list-disc list-inside pl-2 space-y-1 text-slate-300">
+                    <li>Ingresos Totales: ${ingresos}</li>
+                    <li>Egresos Totales: ${egresos}</li>
+                    <li>Utilidad Neta: ${utilidad}</li>
+                    <li>Margen Operativo: ${margen}</li>
+                </ul>
+                <p><strong>3. Historial de Transacciones Registradas:</strong></p>
+                <ul class="list-disc list-inside pl-2 space-y-1 text-slate-300">
+                    ${listaHistorialHTML}
+                </ul>
+                <p class="pt-2 border-t border-slate-800 text-slate-400"><em>Reporte generado automáticamente por el sistema de Business Intelligence.</em></p>
+            `;
+        }
+
+        document.getElementById('form-transaccion').addEventListener('submit', function(e) {
+            e.preventDefault();
+            let fecha = document.getElementById('input-fecha').value;
+            let tipo = document.getElementById('input-tipo').value;
+            let categoria = document.getElementById('input-cat').value;
+            let monto = parseFloat(document.getElementById('input-monto').value);
+
+            transacciones.push({ fecha, tipo, categoria, monto });
+            actualizarDashboard();
+            this.reset();
+        });
+
+        actualizarDashboard();
+    </script>
+</body>
+</html>
